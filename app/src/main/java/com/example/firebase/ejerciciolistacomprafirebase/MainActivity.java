@@ -19,12 +19,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.firebase.ejerciciolistacomprafirebase.databinding.ActivityMainBinding;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     private FirebaseDatabase database;
-    private FirebaseUser user;
+    private String uid;
 
     private ArrayList<Producto> productos;
 
@@ -136,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
                         if (result.getResultCode() == RESULT_OK) {
                             if (result.getData() != null) {
                                 if (result.getData().getExtras() != null) {
-                                    if (result.getData().getExtras().getSerializable("USER") != null) {
-                                        user = (FirebaseUser) result.getData().getExtras().getSerializable("USER");
+                                    if (result.getData().getExtras().getString("UID") != null) {
+                                        uid = result.getData().getExtras().getString("UID");
                                     }
                                     else {
                                         Toast.makeText(MainActivity.this, "El bundle no lleva el tag "+"USER", Toast.LENGTH_SHORT).show();
@@ -157,5 +160,25 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        if (item.getItemId() == R.id.logout){
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+        }
+
+        return true;
     }
 }

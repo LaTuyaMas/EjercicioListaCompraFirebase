@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.firebase.ejerciciolistacomprafirebase.databinding.ActivityLoginBinding;
-import com.example.firebase.ejerciciolistacomprafirebase.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -44,6 +43,9 @@ public class LoginActivity extends AppCompatActivity {
                 if (!email.isEmpty() && password.length() > 5){
                     doRegister(email, password);
                 }
+                else {
+                    Toast.makeText(LoginActivity.this, "Revisa los datos", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -55,6 +57,9 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (!email.isEmpty() && password.length() > 5){
                     doLogin(email, password);
+                }
+                else {
+                    Toast.makeText(LoginActivity.this, "Revisa los datos", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -86,20 +91,32 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
                             user = auth.getCurrentUser();
-                            user.getUid();
                             updateUI(user);
                         }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(LoginActivity.this, "No se ha podido registrar el usuario", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void updateUI (FirebaseUser user) {
         if (user != null){
+            String uid = user.getUid();
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putSerializable("USER", (Serializable) user);
+            bundle.putString("UID", uid);
             startActivity(intent);
             finish();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateUI(auth.getCurrentUser());
     }
 }
