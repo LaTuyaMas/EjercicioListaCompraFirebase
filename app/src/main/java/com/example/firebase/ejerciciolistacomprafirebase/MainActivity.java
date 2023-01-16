@@ -1,6 +1,7 @@
 package com.example.firebase.ejerciciolistacomprafirebase;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -8,6 +9,11 @@ import com.example.firebase.ejerciciolistacomprafirebase.adapters.listaAdapter;
 import com.example.firebase.ejerciciolistacomprafirebase.modelos.Producto;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +25,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.firebase.ejerciciolistacomprafirebase.databinding.ActivityMainBinding;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -29,13 +40,14 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     private FirebaseDatabase database;
+    private FirebaseUser user;
 
     private ArrayList<Producto> productos;
 
     private listaAdapter adapter;
     private RecyclerView.LayoutManager lm;
 
-    private NumberFormat numberFormat;
+    private ActivityResultLauncher<Intent> launcherLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +57,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         database = FirebaseDatabase.getInstance("https://ejerciciolistacomprafirebase-default-rtdb.europe-west1.firebasedatabase.app/");
+        inicializarLauncher();
+
+        DatabaseReference refLista = database.getReference("lista_compra");
+
+        refLista.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         productos = new ArrayList<>();
-        numberFormat = NumberFormat.getCurrencyInstance();
 
         int columnas;
         columnas = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 1 : 2;
@@ -99,5 +125,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         return builder.create();
+    }
+
+    private void inicializarLauncher(){
+        launcherLogin = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK) {
+                            if (result.getData() != null) {
+                                if (result.getData().getExtras() != null) {
+                                    if (result.getData().getExtras().getSerializable("USER") != null) {
+                                        user = (FirebaseUser) result.getData().getExtras().getSerializable("USER");
+                                    }
+                                    else {
+                                        Toast.makeText(MainActivity.this, "El bundle no lleva el tag "+"USER", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                else {
+                                    Toast.makeText(MainActivity.this, "NO HAY BUNDLE EN EL INTENT", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            else {
+                                Toast.makeText(MainActivity.this, "NO HAY INTENT EN EL RESULT", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        else {
+                            Toast.makeText(MainActivity.this, "Ventana Cancelada", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
     }
 }

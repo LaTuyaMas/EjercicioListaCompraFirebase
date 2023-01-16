@@ -17,6 +17,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
+
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
@@ -93,7 +95,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI (FirebaseUser user) {
         if (user != null){
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("USER", (Serializable) user);
+            startActivity(intent);
             finish();
         }
     }
