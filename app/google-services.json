@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "621797395701",
+    "project_id": "ejerciciolistacomprafirebase",
+    "storage_bucket": "ejerciciolistacomprafirebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621797395701:android:8581f638eaefb94c3c49bc",
+        "android_client_info": {
+          "package_name": "com.example.firebase.ejerciciolistacomprafirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "621797395701-varfi8udlie2astak7ttg7p13e2066cs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApIO70QqT84OoyvX3_BzZc_DzVFtARTt0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "621797395701-varfi8udlie2astak7ttg7p13e2066cs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
