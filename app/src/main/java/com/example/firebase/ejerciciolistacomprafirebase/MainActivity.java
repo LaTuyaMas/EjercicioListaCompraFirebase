@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import com.example.firebase.ejerciciolistacomprafirebase.adapters.listaAdapter;
 import com.example.firebase.ejerciciolistacomprafirebase.modelos.Producto;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -28,14 +27,12 @@ import android.widget.Toast;
 
 import com.example.firebase.ejerciciolistacomprafirebase.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -89,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createToDo();
+                createToDo().show();
             }
         });
     }
@@ -105,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         TextView txtPrecio = alertView.findViewById(R.id.txtPrecioCreate);
         Button btnCrear = alertView.findViewById(R.id.btnAnyadirCreate);
 
-        txtNombre.setEnabled(false);
         btnCrear.setVisibility(View.GONE);
 
         builder.setView(alertView);

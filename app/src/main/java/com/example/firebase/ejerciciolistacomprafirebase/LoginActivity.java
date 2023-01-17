@@ -16,8 +16,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.io.Serializable;
-
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;

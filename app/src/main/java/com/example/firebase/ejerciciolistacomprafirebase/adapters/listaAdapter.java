@@ -22,11 +22,11 @@ import java.util.ArrayList;
 
 public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
 
-    private Context context;
-    private ArrayList<Producto> objects;
-    private int resources;
+    private final Context context;
+    private final ArrayList<Producto> objects;
+    private final int resources;
 
-    private NumberFormat numberFormat;
+    private final NumberFormat numberFormat;
 
     public listaAdapter(Context context, ArrayList<Producto> objects, int cardLayout){
         this.context = context;
