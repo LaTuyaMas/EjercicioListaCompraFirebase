@@ -31,6 +31,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     private FirebaseDatabase database;
+    private DatabaseReference refUser;
     private String uid;
 
     private ArrayList<Producto> productos;
@@ -55,16 +57,31 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        setSupportActionBar(binding.toolbar);
 
         database = FirebaseDatabase.getInstance("https://ejerciciolistacomprafirebase-default-rtdb.europe-west1.firebasedatabase.app/");
+        refUser = database.getReference(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("lista_productos");
+
         inicializarLauncher();
 
-        DatabaseReference refLista = database.getReference("lista_compra");
+        productos = new ArrayList<>();
 
-        refLista.addValueEventListener(new ValueEventListener() {
+        int columnas;
+        columnas = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 1 : 2;
+
+        adapter = new listaAdapter(MainActivity.this, productos, R.layout.lista_model_view, refUser);
+        lm = new GridLayoutManager(MainActivity.this, columnas);
+
+        refUser.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                productos.clear();
+                if (snapshot.exists()) {
+                    GenericTypeIndicator<ArrayList<Producto>> gti = new GenericTypeIndicator<ArrayList<Producto>>() {};
+                    ArrayList<Producto> temp = snapshot.getValue(gti);
+                    productos.addAll(temp);
+                }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -73,13 +90,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        productos = new ArrayList<>();
-
-        int columnas;
-        columnas = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 1 : 2;
-
-        adapter = new listaAdapter(MainActivity.this, productos, R.layout.lista_model_view);
-        lm = new GridLayoutManager(MainActivity.this, columnas);
         binding.contentMain.contenedor.setAdapter(adapter);
         binding.contentMain.contenedor.setLayoutManager(lm);
 
@@ -116,7 +126,8 @@ public class MainActivity extends AppCompatActivity {
                     producto.setCantidad(Integer.parseInt(txtCantidad.getText().toString()));
                     producto.setPrecio(Float.parseFloat(txtPrecio.getText().toString()));
                     productos.add(0, producto);
-                    adapter.notifyItemInserted(0);
+                    //adapter.notifyItemInserted(0);
+                    refUser.setValue(productos);
                 }
                 else {
                     Toast.makeText(MainActivity.this, "FALTAN DATOS", Toast.LENGTH_SHORT).show();
@@ -176,5 +187,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("PRODUCTO", productos);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        ArrayList<Producto> temporal = (ArrayList<Producto>) savedInstanceState.getSerializable("PRODUCTO");
+        productos.addAll(temporal);
+        adapter.notifyItemRangeInserted(0, productos.size());
     }
 }

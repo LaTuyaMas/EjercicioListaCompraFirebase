@@ -1,11 +1,19 @@
 package com.example.firebase.ejerciciolistacomprafirebase.modelos;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
 
 public class Producto implements Serializable {
+
     private String nombre;
     private int cantidad;
     private float precio;
+
+    private static final NumberFormat numberFormat;
+
+    static {
+        numberFormat = NumberFormat.getCurrencyInstance();
+    }
 
     public Producto() {}
 
@@ -13,6 +21,10 @@ public class Producto implements Serializable {
         this.nombre = nombre;
         this.cantidad = cantidad;
         this.precio = precio;
+    }
+
+    public String getPrecioMoneda() {
+        return numberFormat.format(this.precio);
     }
 
     public String getNombre() {return nombre;}

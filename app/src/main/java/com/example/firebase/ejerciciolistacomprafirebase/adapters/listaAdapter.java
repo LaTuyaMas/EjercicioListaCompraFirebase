@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.firebase.ejerciciolistacomprafirebase.R;
 import com.example.firebase.ejerciciolistacomprafirebase.modelos.Producto;
+import com.google.firebase.database.DatabaseReference;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
@@ -25,14 +25,13 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
     private final Context context;
     private final ArrayList<Producto> objects;
     private final int resources;
+    private DatabaseReference refDatabase;
 
-    private final NumberFormat numberFormat;
-
-    public listaAdapter(Context context, ArrayList<Producto> objects, int cardLayout){
+    public listaAdapter(Context context, ArrayList<Producto> objects, int cardLayout, DatabaseReference refDatabase){
         this.context = context;
         this.objects = objects;
         this.resources = cardLayout;
-        numberFormat = NumberFormat.getCurrencyInstance();
+        this.refDatabase = refDatabase;
     }
 
     @NonNull
@@ -52,7 +51,7 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
         Producto p = objects.get(position);
         holder.lblNombre.setText(p.getNombre());
         holder.lblCantidad.setText(String.valueOf(p.getCantidad()));
-        holder.lblPrecio.setText(numberFormat.format(p.getPrecio()));
+        holder.lblPrecio.setText(p.getPrecioMoneda());
 
         holder.btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +66,7 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
             }
         });
     }
-    // Retornar la cantidad de elementos que hay que instanciar
+
     @Override
     public int getItemCount() {
         return objects.size();
@@ -101,7 +100,8 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
                     producto.setNombre(txtNombre.getText().toString());
                     producto.setCantidad(Integer.parseInt(txtCantidad.getText().toString()));
                     producto.setPrecio(Float.parseFloat(txtPrecio.getText().toString()));
-                    notifyItemChanged(position);
+                    //notifyItemChanged(position);
+                    refDatabase.setValue(objects);
                 }
                 else {
                     Toast.makeText(context, "FALTAN DATOS", Toast.LENGTH_SHORT).show();
@@ -127,7 +127,8 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 objects.remove(producto);
-                notifyItemRemoved(position);
+                //notifyItemRemoved(position);
+                refDatabase.setValue(objects);
             }
         });
         return builder.create();
