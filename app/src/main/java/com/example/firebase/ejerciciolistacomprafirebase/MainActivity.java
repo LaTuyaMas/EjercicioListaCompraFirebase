@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 
 import com.example.firebase.ejerciciolistacomprafirebase.adapters.listaAdapter;
+import com.example.firebase.ejerciciolistacomprafirebase.modelos.Persona;
 import com.example.firebase.ejerciciolistacomprafirebase.modelos.Producto;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference refUser;
+    private DatabaseReference refPersonal;
 
     private ArrayList<Producto> productos;
 
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance("https://ejerciciolistacomprafirebase-default-rtdb.europe-west1.firebasedatabase.app/");
         refUser = database.getReference(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("lista_productos");
+        refPersonal = database.getReference(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("info_personal");
 
         productos = new ArrayList<>();
 
@@ -128,8 +131,6 @@ public class MainActivity extends AppCompatActivity {
         return builder.create();
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -146,8 +147,55 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         }
+        else if (item.getItemId() == R.id.personal){
+            refPersonal.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+
+                    }
+                    else {
+                        personalToDo().show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
 
         return true;
+    }
+
+    private androidx.appcompat.app.AlertDialog personalToDo() {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Rellena tu información");
+        builder.setCancelable(false);
+
+        View alertView = LayoutInflater.from(MainActivity.this). inflate(R.layout.personal_alert_view, null);
+        TextView txtNombreP = alertView.findViewById(R.id.txtNombrePersonalAlert);
+        TextView txtTelefonoP = alertView.findViewById(R.id.txtTelefonoPersonalAlert);
+
+        builder.setView(alertView);
+
+        builder.setNegativeButton("CANCELAR", null);
+        builder.setPositiveButton("CONFIRMAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (!txtNombreP.getText().toString().isEmpty() && !txtTelefonoP.getText().toString().isEmpty()){
+                    String nombre = txtNombreP.getText().toString();
+                    String telefono = txtTelefonoP.getText().toString();
+                    Persona p = new Persona(nombre, telefono);
+                    refPersonal.setValue(p);
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "FALTAN DATOS", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        return builder.create();
     }
 
     @Override
