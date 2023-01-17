@@ -8,10 +8,6 @@ import android.os.Bundle;
 import com.example.firebase.ejerciciolistacomprafirebase.adapters.listaAdapter;
 import com.example.firebase.ejerciciolistacomprafirebase.modelos.Producto;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -42,14 +38,11 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference refUser;
-    private String uid;
 
     private ArrayList<Producto> productos;
 
     private listaAdapter adapter;
     private RecyclerView.LayoutManager lm;
-
-    private ActivityResultLauncher<Intent> launcherLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance("https://ejerciciolistacomprafirebase-default-rtdb.europe-west1.firebasedatabase.app/");
         refUser = database.getReference(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("lista_productos");
-
-        inicializarLauncher();
 
         productos = new ArrayList<>();
 
@@ -137,37 +128,7 @@ public class MainActivity extends AppCompatActivity {
         return builder.create();
     }
 
-    private void inicializarLauncher(){
-        launcherLogin = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == RESULT_OK) {
-                            if (result.getData() != null) {
-                                if (result.getData().getExtras() != null) {
-                                    if (result.getData().getExtras().getString("UID") != null) {
-                                        uid = result.getData().getExtras().getString("UID");
-                                    }
-                                    else {
-                                        Toast.makeText(MainActivity.this, "El bundle no lleva el tag "+"USER", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                                else {
-                                    Toast.makeText(MainActivity.this, "NO HAY BUNDLE EN EL INTENT", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            else {
-                                Toast.makeText(MainActivity.this, "NO HAY INTENT EN EL RESULT", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        else {
-                            Toast.makeText(MainActivity.this, "Ventana Cancelada", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-        );
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -1,5 +1,6 @@
 package com.example.firebase.ejerciciolistacomprafirebase.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -25,7 +26,7 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
     private final Context context;
     private final ArrayList<Producto> objects;
     private final int resources;
-    private DatabaseReference refDatabase;
+    private final DatabaseReference refDatabase;
 
     public listaAdapter(Context context, ArrayList<Producto> objects, int cardLayout, DatabaseReference refDatabase){
         this.context = context;
@@ -56,13 +57,13 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
         holder.btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eliminarProducto(p, holder.getAdapterPosition()).show();
+                eliminarProducto(p).show();
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editToDo(p, holder.getAdapterPosition()).show();
+                editToDo(p).show();
             }
         });
     }
@@ -72,7 +73,7 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
         return objects.size();
     }
 
-    private androidx.appcompat.app.AlertDialog editToDo(Producto producto, int position) {
+    private androidx.appcompat.app.AlertDialog editToDo(Producto producto) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
         builder.setTitle("Editar Producto");
         builder.setCancelable(false);
@@ -111,7 +112,8 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
         return builder.create();
     }
 
-    private android.app.AlertDialog eliminarProducto(Producto producto, int position){
+    @SuppressLint("SetTextI18n")
+    private android.app.AlertDialog eliminarProducto(Producto producto){
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
 
         builder.setCancelable(false);
